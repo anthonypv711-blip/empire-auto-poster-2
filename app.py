@@ -13,31 +13,23 @@ posted = set()
 skipped = set()
 
 def get_inventory():
-    res = requests.get("https://www.empirefordinc.com/new-vehicles/")
-    soup = BeautifulSoup(res.text, "html.parser")
+    url = "https://www.empirefordinc.com/apis/inventory/vehicles?type=new"
+
+    res = requests.get(url)
+    data = res.json()
 
     cars = []
 
-    for item in soup.find_all("a", href=True):
-        link = item["href"]
+    for vehicle in data.get("vehicles", []):
+        title = f"{vehicle.get('year')} {vehicle.get('make')} {vehicle.get('model')}"
+        link = "https://www.empirefordinc.com" + vehicle.get("vdp_url", "")
 
-        if "/new/" in link:
-            title = item.get_text(strip=True)
+        cars.append({
+            "title": title,
+            "link": link
+        })
 
-            if not link.startswith("http"):
-                link = "https://www.empirefordinc.com" + link
-
-            if title:
-                cars.append({
-                    "title": title,
-                    "link": link
-                })
-
-    # remove duplicates
-    unique = {car["link"]: car for car in cars}
-
-    return list(unique.values())[:15]
-
+    return cars[:15]
 def post_to_facebook(title, link):
     url = f"https://graph.facebook.com/{PAGE_ID}/feed"
 

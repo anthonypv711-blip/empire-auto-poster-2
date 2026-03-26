@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Empire Ford Auto Poster</title>
+</head>
+<body>
+    <h1>Approve Vehicles to Post</h1>
+
+    {% for car in cars %}
+        <div style="border:1px solid #ccc; padding:15px; margin:15px;">
+            <h3>{{ car.title }}</h3>
+
+            <a href="{{ car.link }}" target="_blank">View Vehicle</a>
+
+            <form action="/post" method="post" style="display:inline;">
+                <input type="hidden" name="title" value="{{ car.title }}">
+                <input type="hidden" name="link" value="{{ car.link }}">
+                <button type="submit">✅ POST</button>
+            </form>
+
+            <form action="/skip" method="post" style="display:inline;">
+                <input type="hidden" name="link" value="{{ car.link }}">
+                <button type="submit">❌ SKIP</button>
+            </form>
+        </div>
+    {% endfor %}
+</body>
+</html>
